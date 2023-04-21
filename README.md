@@ -5,9 +5,10 @@ Chakula is a native mobile application made with Jetpack using Kotlin. It enable
 choose a mode of payment from an API, checkout and view past orders.
 
 The App is built offline first enabling you to pick up where you left off and minimise network requests.
+The App is with the Material You design language
 
 ## Running the app
-Download the latest version of Android Studio
+Download the latest version of Android Studio.
 Once Android Studio is ready, clone this project on your machine and open it up as a project on Android Studio
 
 Navigate to `app/src/main/java/com/example/chakula`
