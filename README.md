@@ -25,4 +25,8 @@ In total, there are 4 views.
 <img src="https://github.com/derekleiro/chakula/blob/main/app/src/main/java/com/example/chakula/screenshots/checkout.png" title="Checkout Page" alt="Checkout Page" width="250">
 <img src="https://github.com/derekleiro/chakula/blob/main/app/src/main/java/com/example/chakula/screenshots/orders.png" title="Orders Page" alt="Orders Page" width="250">
 </p>
+
+## Feature Consideration
+With extra time, I would love to include; a nice page for when there is no data in a particular view, state for the checkout button and add assets unique
+to the Chakula app, that include Splash Screen and App icon 
   
