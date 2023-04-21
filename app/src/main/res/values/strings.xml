@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Chakula</string>
+
+    <string name="home_title">Home</string>
+    <string name="orders_title">Orders</string>
+    <string name="home_tap_to_load_content">Tap to load content</string>
+    <string name="retry">Retry</string>
+    <string name="cd_open_navigation_drawer">Open navigation drawer</string>
+    <string name="cd_go_backr">Go backr</string>>
+    <string name="load_error">Can\'t update new produts</string>
+    <string name="home_sale">SALE</string>
+    <string name="home_sold">SOLD</string>
+    <string name="cd_more_actions">More actions</string>
+    
+</resources>
