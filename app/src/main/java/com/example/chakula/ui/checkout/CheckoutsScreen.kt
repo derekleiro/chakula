@@ -1,26 +1,27 @@
 package com.example.chakula.ui.checkout
 
 import CheckoutCard
+import Payment
 import Product
-import ProductCard
+import android.widget.Toast
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,13 +38,14 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,6 +61,15 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.unit.*
+import com.example.chakula.ChakulaApplication
 
 /**
  * The home screen displaying just the article feed.
@@ -70,6 +81,7 @@ fun CheckoutFeedScreen(
     showTopAppBar: Boolean,
     onRefreshProducts: () -> Unit,
     onProductTapped: (Product) -> Unit,
+    paymentTypeSelected: (Payment) -> Unit,
     onErrorDismiss: (Long) -> Unit,
     openDrawer: () -> Unit,
     placeOrder: () -> Unit,
@@ -82,6 +94,7 @@ fun CheckoutFeedScreen(
         navController = navController,
         onRefreshProducts = onRefreshProducts,
         onProductTapped = onProductTapped,
+        paymentTypeSelected = paymentTypeSelected,
         onErrorDismiss = onErrorDismiss,
         openDrawer = openDrawer,
         placeOrder = placeOrder,
@@ -91,6 +104,8 @@ fun CheckoutFeedScreen(
         ProductList(
             productFeed = hasPostsUiState.selectedProducts,
             onProductTapped = onProductTapped,
+            payments = hasPostsUiState.payments,
+            paymentTypeSelected = paymentTypeSelected,
             contentPadding = rememberContentPaddingForScreen(
                 additionalTop = if (showTopAppBar) 0.dp else 8.dp,
                 excludeTop = showTopAppBar
@@ -110,6 +125,7 @@ private fun CheckoutScreenWithList(
     navController: NavHostController,
     onRefreshProducts: () -> Unit,
     onProductTapped: (Product) -> Unit,
+    paymentTypeSelected: (Payment) -> Unit,
     onErrorDismiss: (Long) -> Unit,
     openDrawer: () -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -196,6 +212,8 @@ private fun CheckoutScreenWithList(
 private fun ProductList(
     productFeed: List<Product>,
     onProductTapped: (Product) -> Unit,
+    payments: List<Payment>,
+    paymentTypeSelected: (Payment) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState(),
@@ -207,7 +225,8 @@ private fun ProductList(
     ) {
 
         if (productFeed.isNotEmpty()) {
-            item { ProductListSection(productFeed, onProductTapped) }
+            item { ProductListSection(productFeed,payments,
+                paymentTypeSelected, onProductTapped,) }
         }
     }
 }
@@ -275,6 +294,8 @@ private fun CheckoutTopAppBar(
 @Composable
 private fun ProductListSection(
     products: List<Product>,
+    payments: List<Payment>,
+    paymentTypeSelected: (Payment) -> Unit,
     removeFromCart: (Product) -> Unit
 ) {
     val totalPrice = products.sumOf { it.price }
@@ -287,8 +308,61 @@ private fun ProductListSection(
             CheckoutCard(product, removeFromCart)
             PostListDivider()
         }
+        PaymentDropdown(payments = payments, onItemSelected = paymentTypeSelected)
         Text(text = "Total KES $totalPrice", fontWeight = FontWeight.Bold, modifier = Modifier.padding(all = 16.dp))
         Text(text = "Order Date $formattedDate", modifier = Modifier.padding(horizontal = 16.dp))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PaymentDropdown(
+    payments: List<Payment>,
+    onItemSelected: (Payment) -> Unit,
+) {
+    // state of the menu
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    // remember the selected item
+    var selectedItem by remember {
+        mutableStateOf(Payment(id = 1, name = "Cash"))
+    }
+
+    Text("How would you like to pay?", modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
+    // box
+    ExposedDropdownMenuBox(
+        modifier = Modifier.fillMaxWidth(),
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        }
+    ) {
+        TextField(
+            value = selectedItem.name,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+        // menu
+        ExposedDropdownMenu(
+            expanded = expanded,
+            modifier = Modifier.fillMaxWidth(),
+            onDismissRequest = { expanded = false }
+        ) {
+            // this is a column scope
+            // all the items are added vertically
+            payments.forEach { selectedOption ->
+                // menu item
+                DropdownMenuItem(text = { Text(text = selectedOption.name) }, onClick = {
+                    onItemSelected(selectedOption)
+                    selectedItem = selectedOption
+                    expanded = false
+                })
+            }
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import ProductCard
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -248,7 +249,9 @@ private fun OrderListSection(
             }
             Text(text = "Total KES ${order.total}", fontWeight = FontWeight.Bold, modifier = Modifier.padding(all = 16.dp))
             Text(text = "Order Date ${order.date}", modifier = Modifier.padding(horizontal = 16.dp))
+            Text(text = "Paid Via ${order.payment.name}", modifier = Modifier.padding(horizontal = 16.dp))
             PostListDivider()
+            Spacer(modifier = Modifier.padding(bottom = 25.dp))
         }
 
     }

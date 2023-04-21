@@ -1,6 +1,7 @@
 package com.example.chakula.ui.home
 
 import Order
+import Payment
 import Product
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -46,6 +47,8 @@ sealed interface HomeUiState {
         val productsFeed: List<Product>,
         val selectedProducts: List<Product>,
         val orderedProducts: List<Order>,
+        val payments: List<Payment>,
+        val selectedPaymentType: Payment,
         override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
     ) : HomeUiState
@@ -55,6 +58,8 @@ private data class HomeViewModelState(
     val productsFeed: List<Product>? = null,
     val selectedProducts: List<Product> = emptyList(),
     val orderedProducts: List<Order> = emptyList(),
+    val payments: List<Payment> = emptyList(),
+    val selectedPaymentType: Payment = Payment(id = 1, name = "Cash"),
     val isLoading: Boolean = false,
     val errorMessages: List<ErrorMessage> = emptyList(),
     val searchInput: String = "",
@@ -71,6 +76,8 @@ private data class HomeViewModelState(
                 productsFeed = productsFeed,
                 selectedProducts = selectedProducts,
                 orderedProducts = orderedProducts,
+                payments = payments,
+                selectedPaymentType = selectedPaymentType,
                 isLoading = isLoading,
                 errorMessages = errorMessages,
             )
@@ -98,6 +105,7 @@ class HomeViewModel(
 
     init {
         initialProductsFetch()
+        getPaymentTypes()
         getCartItems()
         getOrderedItems()
     }
@@ -138,6 +146,23 @@ class HomeViewModel(
                 it.copy(productsFeed = result.data, isLoading = false)
             }
         }
+    }
+
+    private fun getPaymentTypes() {
+        // Ui state is refreshing
+        viewModelState.update { it.copy(isLoading = true) }
+
+        viewModelScope.launch {
+            val result = productsRepository.getPayments()
+            viewModelState.update {
+                it.copy(payments = result.data, isLoading = false)
+            }
+        }
+    }
+
+    fun setSelectedPaymentType(payment: Payment) {
+        // Ui state is refreshing
+        viewModelState.update { it.copy(selectedPaymentType = payment) }
     }
 
     private fun getCartItems() {
@@ -210,7 +235,7 @@ class HomeViewModel(
         val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val formattedDate = formatter.format(currentDate)
 
-        val order = Order(formattedDate, totalPrice, viewModelState.value.selectedProducts)
+        val order = Order(formattedDate, totalPrice, viewModelState.value.selectedProducts, payment = viewModelState.value.selectedPaymentType)
         val orders = ordersList.plus(order)
 
         val json = gson.toJson(orders)

@@ -83,6 +83,7 @@ fun ChakulaNavGraph(
                 homeViewModel = homeViewModel,
                 isExpandedScreen = isExpandedScreen,
                 openDrawer = openDrawer,
+                paymentTypeSelected = fun (Payment){ homeViewModel.setSelectedPaymentType(Payment) },
                 placeOrder = fun () {
                     if (sharedPreferences != null) {
                         homeViewModel.placeOrder(sharedPreferences)

@@ -1,3 +1,4 @@
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.chakula.ChakulaApplication
 import com.example.chakula.R
 
 
@@ -43,7 +45,10 @@ fun CheckoutCard(product: Product, removeFromCart: (Product) -> Unit) {
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
-        IconButton(onClick = { removeFromCart(product) }) {
+        IconButton(onClick = {
+            removeFromCart(product)
+            Toast.makeText(ChakulaApplication.getContext(), "I have not yet implemented this feature", Toast.LENGTH_SHORT).show()
+        }) {
             Icon(
                 imageVector = Icons.Filled.RemoveShoppingCart,
                 contentDescription = stringResource(R.string.cd_more_actions)

@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.chakula.R
 import com.example.chakula.ui.ChakulaDestinations
+import com.example.chakula.ui.ChakulaLogo
 
 @Composable
 fun AppNavRail(
@@ -28,13 +29,7 @@ fun AppNavRail(
 ) {
     NavigationRail(
         header = {
-            Icon(
-
-                painterResource(R.drawable.ic_jetnews_logo),
-                null,
-                Modifier.padding(vertical = 12.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            ChakulaLogo()
         },
         modifier = modifier
     ) {

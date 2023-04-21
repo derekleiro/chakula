@@ -1,6 +1,7 @@
 
 package com.example.chakula.ui.checkout
 
+import Payment
 import Product
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ fun CheckoutRoute(
     homeViewModel: HomeViewModel,
     isExpandedScreen: Boolean,
     removeFromCart: (Product) -> Unit,
+    paymentTypeSelected: (Payment) -> Unit,
     openDrawer: () -> Unit,
     placeOrder: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -35,6 +37,7 @@ fun CheckoutRoute(
         placeOrder = placeOrder,
         homeListLazyListState = homeListLazyListState,
         onProductTapped = removeFromCart,
+        paymentTypeSelected = paymentTypeSelected,
         snackbarHostState = snackbarHostState,
     )
 }
