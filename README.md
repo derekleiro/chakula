@@ -1,6 +1,4 @@
 # chakula
-Android Engineer assessment
-
 Chakula is a native mobile application made with Jetpack using Kotlin. It enables a user to browse a catalog of products, add desired products to cart,
 choose a mode of payment from an API, checkout and view past orders.
 
